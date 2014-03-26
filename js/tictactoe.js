@@ -39,6 +39,7 @@ var Game = function($board) {
     this.$board.find('.cell a').unbind('click');
     this.$board.find('.cell a').click(function(evt) { evt.preventDefault(); });
     this.directions('The winner is: ' + this.players[winner], 'success');
+    this.toggleReset();
   };
 
   // testSquares tests all the possible combinations of square to see if the player who just played has won.
@@ -68,6 +69,7 @@ var Game = function($board) {
     // if there is no winner, are there spaces left to play?
     if (this.isGameOver(this.board)) {
       this.directions('The Game ended in a tie');
+      this.toggleReset();
       return true;
     }
     // game's not over!
@@ -104,9 +106,7 @@ var Game = function($board) {
           return;
         }
         self.setPosition(i);
-        if (self.testWin()) {
-          self.toggleReset();
-        } else {
+        if (!self.testWin()) {
           self.computerTurn();
         }
       });
@@ -122,6 +122,9 @@ var MiniMax = function(player, computer) {
   this.getNextMove = function(game) {
     var current_board = game.board
     self.game = game;
+
+    //always go for the middle
+    if (current_board[4] === undefined) { return 4; }
 
 
     var available_slots = current_board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
