@@ -139,10 +139,16 @@ var MiniMax = function(player, computer) {
       temp[x] = player;
       return self.game.testSquares(player, temp);
     });
+    var immediate_win_array = available_slots.map(function(x) {
+      var temp = current_board.slice(0);
+      temp[x] = computer;
+      return self.game.testSquares(computer, temp);
+    });
 
-    var immediate_win = losing_score_array.indexOf(true);
+    var immediate_loss = losing_score_array.indexOf(true);
+    var immediate_win = immediate_win_array.indexOf(true);
 
-    var ret_score = immediate_win >= 0 ? available_slots[immediate_win] : (winning_score_array.indexOf(10) >= 0 ? available_slots[winning_score_array.indexOf(10)] : available_slots[winning_score_array.indexOf(0)]);
+    var ret_score = immediate_win >= 0 ? available_slots[immediate_win] : (immediate_loss >= 0 ? available_slots[immediate_loss] : (winning_score_array.indexOf(10) >= 0 ? available_slots[winning_score_array.indexOf(10)] : available_slots[winning_score_array.indexOf(0)]));
 
     return ret_score;
   };
