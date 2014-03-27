@@ -122,51 +122,16 @@ var MiniMax = function(player, computer) {
   this.player = player;
   this.computer = computer;
 
+  this.choice = undefined;
+
   // getNextMove returns the best statistical move for the computer to make.
   this.getNextMove = function(game) {
-    var current_board = game.board
+    var current_board = game.board.slice(0);
     self.game = game;
 
-    //always go for the center
-    if (current_board[4] === undefined) { return 4; }
+    getScoreArray(current_board, computer, player, 1);
 
-    var available_slots = current_board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
-    var winning_score_array = available_slots.map(function(x) {
-      var temp = current_board.slice(0);
-      temp[x] = computer;
-      return getScoreArray(temp, player, computer, 1);
-    });
-    //look for any available losses within the next move.
-    var losing_score_array = available_slots.map(function(x) {
-
-      var temp = current_board.slice(0);
-      temp[x] = player;
-      return self.game.testSquares(player, temp);
-    });
-
-    //look for any available wins within the next move.
-    var immediate_win_array = available_slots.map(function(x) {
-      var temp = current_board.slice(0);
-      temp[x] = computer;
-      return self.game.testSquares(computer, temp);
-    });
-
-    //see if we were able to find any immediate wins or losses.
-    var immediate_loss = losing_score_array.indexOf(true);
-    var immediate_win = immediate_win_array.indexOf(true);
-
-    var max_index = 0;
-    var max_value = -Infinity;
-
-    winning_score_array.forEach(function(x, i) {
-      if (x > max_value) {
-        max_value = x;
-        max_index = i;
-      }
-    });
-
-    var ret_score = immediate_win >= 0 ? available_slots[immediate_win] : (immediate_loss >= 0 ? available_slots[immediate_loss] : available_slots[max_index]);
-    return ret_score;
+    return self.choice;
   };
 
   var penalty = 10.0;
@@ -174,19 +139,38 @@ var MiniMax = function(player, computer) {
   var getScoreArray = function(board, active, secondary, depth) {
     //see if the player that just played wins
     if (self.game.testSquares(secondary, board)){
-      return secondary === self.player ? -penalty * depth : penalty / depth;
+      return secondary === self.player ? penalty - depth : depth - penalty;
     } else if (self.game.isGameOver(board)) {
       return 0;
     }
     var available_slots = board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
 
 
-    return available_slots.reduce(function(a, slot) {
+    var scores_array = available_slots.map(function(slot) {
       var temp_board = board.slice(0);
       temp_board[slot] = active;
       return getScoreArray(temp_board, secondary, active, depth + 1)
     });
 
+    if (active === self.player) {
+      var max_val = -Infinity;
+      scores_array.forEach(function(x,i) {
+        if (x > max_val) {
+          self.choice = available_slots[i];
+          max_val = x;
+        }
+      });
+      return max_val;
+    } else {
+      var min_val = Infinity;
+      scores_array.forEach(function(x,i) {
+        if (x < min_val) {
+          self.choice = available_slots[i];
+          min_val = x;
+        }
+      });
+      return min_val;
+    }
   };
 };
 
