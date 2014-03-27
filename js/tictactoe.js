@@ -127,11 +127,14 @@ var MiniMax = function(player, computer) {
     var current_board = game.board
     self.game = game;
 
+    //always go for the center
+    if (current_board[4] === undefined) { return 4; }
+
     var available_slots = current_board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
     var winning_score_array = available_slots.map(function(x) {
       var temp = current_board.slice(0);
       temp[x] = computer;
-      return getScoreArray(temp, player, computer);
+      return getScoreArray(temp, player, computer, 1);
     });
     //look for any available losses within the next move.
     var losing_score_array = available_slots.map(function(x) {
@@ -166,20 +169,24 @@ var MiniMax = function(player, computer) {
     return ret_score;
   };
 
-  var getScoreArray = function(board, active, secondary) {
+  var penalty = 10.0;
+
+  var getScoreArray = function(board, active, secondary, depth) {
     //see if the player that just played wins
     if (self.game.testSquares(secondary, board)){
-      return secondary === self.player ? -10 : 10;
+      return secondary === self.player ? -penalty * depth : penalty / depth;
     } else if (self.game.isGameOver(board)) {
       return 0;
     }
     var available_slots = board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
 
+
     return available_slots.reduce(function(a, slot) {
       var temp_board = board.slice(0);
       temp_board[slot] = active;
-      return a + getScoreArray(temp_board, secondary, active);
-    }, 0);
+      return getScoreArray(temp_board, secondary, active, depth + 1)
+    });
+
   };
 };
 
