@@ -9,7 +9,7 @@ var Square = function() {
 
 var Game = function($board) {
   var self = this;
-  this.players = ['&times;', '&#9675;'];
+  this.players = ['<span class="fa fa-times"></span>', '<span class="fa fa-circle-o"></span>'];
   this.$board = $board;
   this.winningCombinations = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
@@ -139,19 +139,23 @@ var MiniMax = function(player, computer) {
   var getScoreArray = function(board, active, secondary, depth) {
     //see if the player that just played wins
     if (self.game.testSquares(secondary, board)){
+      //penalty based on depth leads to smarter early round picks.
       return secondary === self.player ? penalty - depth : depth - penalty;
     } else if (self.game.isGameOver(board)) {
       return 0;
     }
+
+    //get the list of available slots
     var available_slots = board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
 
-
+    // run through the list of all possible moves.
     var scores_array = available_slots.map(function(slot) {
       var temp_board = board.slice(0);
       temp_board[slot] = active;
       return getScoreArray(temp_board, secondary, active, depth + 1)
     });
 
+    // if this is the player, we want to maximize our scoring potential.
     if (active === self.player) {
       var max_val = -Infinity;
       scores_array.forEach(function(x,i) {
@@ -161,7 +165,7 @@ var MiniMax = function(player, computer) {
         }
       });
       return max_val;
-    } else {
+    } else { // if this is the computer we want to minimize the scoring potential.
       var min_val = Infinity;
       scores_array.forEach(function(x,i) {
         if (x < min_val) {
