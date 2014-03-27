@@ -115,17 +115,17 @@ var Game = function($board) {
 };
 
 
+//this is an implementation of the Minimax algorithm for finding the best solution for playing a move.
 var MiniMax = function(player, computer) {
+  //set up self so we can use it inside callbacks.
   var self = this;
   this.player = player;
   this.computer = computer;
+
+  // getNextMove returns the best statistical move for the computer to make.
   this.getNextMove = function(game) {
     var current_board = game.board
     self.game = game;
-
-    //always go for the middle
-    if (current_board[4] === undefined) { return 4; }
-
 
     var available_slots = current_board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
     var winning_score_array = available_slots.map(function(x) {
@@ -133,23 +133,36 @@ var MiniMax = function(player, computer) {
       temp[x] = computer;
       return getScoreArray(temp, player, computer);
     });
+    //look for any available losses within the next move.
     var losing_score_array = available_slots.map(function(x) {
 
       var temp = current_board.slice(0);
       temp[x] = player;
       return self.game.testSquares(player, temp);
     });
+
+    //look for any available wins within the next move.
     var immediate_win_array = available_slots.map(function(x) {
       var temp = current_board.slice(0);
       temp[x] = computer;
       return self.game.testSquares(computer, temp);
     });
 
+    //see if we were able to find any immediate wins or losses.
     var immediate_loss = losing_score_array.indexOf(true);
     var immediate_win = immediate_win_array.indexOf(true);
 
-    var ret_score = immediate_win >= 0 ? available_slots[immediate_win] : (immediate_loss >= 0 ? available_slots[immediate_loss] : (winning_score_array.indexOf(10) >= 0 ? available_slots[winning_score_array.indexOf(10)] : available_slots[winning_score_array.indexOf(0)]));
+    var max_index = 0;
+    var max_value = -Infinity;
 
+    winning_score_array.forEach(function(x, i) {
+      if (x > max_value) {
+        max_value = x;
+        max_index = i;
+      }
+    });
+
+    var ret_score = immediate_win >= 0 ? available_slots[immediate_win] : (immediate_loss >= 0 ? available_slots[immediate_loss] : available_slots[max_index]);
     return ret_score;
   };
 
@@ -162,26 +175,11 @@ var MiniMax = function(player, computer) {
     }
     var available_slots = board.reduce(function(a,b,i) { if (b === undefined) a.push(i); return a }, []);
 
-    if (active === self.player) {
-      var bestValue = -Infinity;
-      available_slots.forEach(function(slot) {
-        var temp_board = board.slice(0);
-        temp_board[slot] = active;
-        var val = getScoreArray(temp_board, secondary, active);
-        bestValue = Math.max(val, bestValue);
-      });
-      return bestValue;
-    } else {
-      var bestValue = Infinity;
-      available_slots.forEach(function(slot) {
-        var temp_board = board.slice(0);
-        temp_board[slot] = active;
-        var val = getScoreArray(temp_board, secondary, active);
-        bestValue = Math.min(val, bestValue);
-      });
-      return bestValue;
-    }
-
+    return available_slots.reduce(function(a, slot) {
+      var temp_board = board.slice(0);
+      temp_board[slot] = active;
+      return a + getScoreArray(temp_board, secondary, active);
+    }, 0);
   };
 };
 
