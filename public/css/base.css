@@ -7,6 +7,7 @@
 html, body {
   padding: 0;
   margin: 0;
+  font-family: Helvetica, Arial, 'lucida grande',tahoma,verdana,arial,sans-serif;
 }
 
 .btn-gradient {

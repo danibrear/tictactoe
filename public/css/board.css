@@ -2,15 +2,8 @@
 
 .board {
   padding: 15px;
-  background-color: #fff;
-  background-image: linear-gradient(top, rgba(85,85,85,255) 0%, rgba(61,61,61,255) 51%, rgba(37,37,37,255) 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(85,85,85,255)), color-stop(0.5109697, rgba(61,61,61,255)), color-stop(1, rgba(37,37,37,255)));
-  background-image: -moz-linear-gradient(top, rgba(85,85,85,255) 0%, rgba(61,61,61,255) 51%, rgba(37,37,37,255) 100%);
-  background-image: -o-linear-gradient(top, rgba(85,85,85,255) 0%, rgba(61,61,61,255) 51%, rgba(37,37,37,255) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#3d3d3d'endColorstr='#252525');
   max-width: 50%;
   margin: 2% auto;
-  border: 2px #000 solid;
 }
 .row {
   display: table;
@@ -35,17 +28,17 @@
   vertical-align: bottom;
 }
 .row .cell a .fa-times {
-  color: #000055;
+  color: #7ab800;
 }
 .row .cell a .fa-circle-o {
-  color: #550011;
+  color: #a5464d;
 }
 .directions {
   text-align: center;
-  color: #fff;
+  color: #252525;
 }
 .directions.success {
-  color: #22ff55;
+  color: #7ab800;
 }
 .reset {
   display: block;
@@ -53,4 +46,5 @@
   height: 50px;
   line-height: 50px;
   border-radius: 5px;
+  border: 1px #252525 solid;
 }
