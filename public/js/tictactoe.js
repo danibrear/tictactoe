@@ -68,7 +68,7 @@ var Game = function($board) {
     }
     // if there is no winner, are there spaces left to play?
     if (this.isGameOver(this.board)) {
-      this.directions('The Game ended in a tie');
+      this.directions('It\'s a tie!');
       this.toggleReset();
       return true;
     }
