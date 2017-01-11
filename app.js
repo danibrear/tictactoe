@@ -2,12 +2,14 @@
 
 var express = require('express');
 var app = express();
-
 app.use(express.static('public'));
 
-app.listen(8000);
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT);
+
+console.log(`-- Listening on port ${PORT}`);
 
 app.get('/', function(req, res) {
   res.sendfile('./index.html');
 });
-
